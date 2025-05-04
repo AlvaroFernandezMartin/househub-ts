@@ -13,12 +13,13 @@ import NavbarHauses from '@/components/NavbarHauses.vue'
 
 <style>
 *{
-  padding: 0;
-  margin: 0;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 .page-content {
   background-color: #f4f4f4;
   min-height: 100vh;
+  /* background-color: #e03737; */
 
 }
 </style>

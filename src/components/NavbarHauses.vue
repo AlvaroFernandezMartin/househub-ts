@@ -1,14 +1,23 @@
 <template>
   <nav>
-    <img src="../assets/img_logo_dtt@3x.png" alt="dtt_logo" class="logo" />
-    <ul>
-      <li>
-        <router-link :to="{ name: 'Home' }" class="nav-link">Home</router-link>
-      </li>
-      <li>
-        <router-link :to="{ name: 'About' }" class="nav-link">About</router-link>
-      </li>
-    </ul>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-2 ">
+          <!-- Puedes añadir contenido si lo necesitas -->
+        </div>
+        <div class="col-10 d-flex align-items-center">
+          <img src="../assets/img_logo_dtt@3x.png" alt="dtt_logo" class="logo" />
+          <ul>
+            <li>
+              <router-link :to="{ name: 'Home' }" class="nav-link">Home</router-link>
+            </li>
+            <li>
+              <router-link :to="{ name: 'About' }" class="nav-link">About</router-link>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </nav>
 </template>
 
@@ -18,31 +27,24 @@
 
 <style scoped>
 nav {
-  background-color: #FFFFFF;
-  display: grid;
-  grid-template-columns: auto 1fr;
-  grid-gap: 20px;
-  align-items: center;
-  padding: 10px;
-  padding-left: 15%;
+  background-color: #ffffff;
 }
 
-nav .logo {
+.logo {
   width: 100px;
-  margin-right: 30px;
+  margin-top: 1% !important;
+  margin-bottom: 1% !important;
 }
 
 nav ul {
   list-style-type: none;
   display: flex;
-}
-
-nav li {
-  margin-right: 50px;
+  margin-left: 30px !important;
+  gap: 40px;
 }
 
 .nav-link {
-  color: #4A4B4C;
+  color: #4a4b4c;
   text-decoration: none;
   font-weight: 500;
   font-family: 'Montserrat', sans-serif;

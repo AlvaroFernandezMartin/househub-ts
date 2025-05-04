@@ -7,27 +7,53 @@
 
       <!-- Contenido central -->
       <main class="col-12 col-sm-8 ">
-        <div class="row h-25">
-          <div class="d-flex justify-content-between p-0 bg-warning ">
+          <div class="row row1">
+            <div class="d-flex justify-content-between   ">
+              <h1 class="">Houses</h1>
+              <button id="button_create_new">+ CREATE NEW</button>
+            </div>
 
-            <h1 class="m-0">Houses</h1>
-            <button id="button_create_new">+ CREATE NEW</button>
-          </div>
+            <div class="col-12 col-sm-6   d-flex align-items-end bg-inf ">
+              <div class="input_container position-relative">
+                <img src="../assets/ic_search@3x.png" alt="Buscar"  id="icon-search" class="icon " />
+              <input type="text" placeholder="Search for a house" />
+              <button>
+                <img src="../assets/ic_clear@3x.png" alt="clear" id="icon-clean" class="icon" />
+              </button>
 
-          <div class="col-12 col-sm-6 bg-info">
-            <img src="../assets/ic_search@3x.png" alt="Buscar" class="icon" />
-          <input type="text" placeholder="Search for a house" />
-          <button>
-            <img src="../assets/ic_clear@3x.png" alt="clear" class="icon" />
-          </button>
-          </div>
-          <div class="col-12 col-sm-6  bg-danger">
-            <button class="">Price</button>
-            <button class="">Size</button>
-          </div>
+              </div>
 
-        </div>
-        <div class="row">
+            </div>
+            <div class="col-12 col-sm-6 d-flex justify-content-end align-items-end">
+              <div class="button_container">
+                <button id="button_price">Price</button>
+                <button id="button_size">Size</button>
+              </div>
+            </div>
+
+
+          </div>
+          <div class="row h-75">
+            <div v-if="successful_search" class="card-hauses-wrapper ">
+              <h3 v-if="number_results > 0">{{ number_results }} results found</h3>
+              <CardHouse
+                v-for="house in filtered_houses"
+                :key="house.id"
+                :house="house"
+                :all_icons="true"
+                @delete-house="goToDeleteHouse"
+                @edit-house="goToEditHouse(house.id)"
+              />
+            </div>
+
+            <!-- <div v-else-if="sheard && number_results === 0" id="div_empty_houses">
+              <img id="img_empty_houses" src="../assets/img_empty_houses@3x.png" alt="No results found" />
+              <label>No results found.</label>
+              <label>Please key another keyword.</label>
+            </div> -->
+
+          <!-- <div v-if="loading">Loading houses...</div>
+          <div v-if="error">{{ error }}</div> -->
         </div>
       </main>
 
@@ -38,25 +64,217 @@
 </template>
 
 <script lang="ts" setup>
+import { ref, onMounted, watch } from 'vue'
+import { useRouter } from 'vue-router'
+import HomeService, { type House } from '@/services/HomeService'
+import CardHouse from '@/components/CardHouse.vue'
+
+const homeService = new HomeService()
+const houses = ref<House[]>([])
+const filtered_houses = ref<House[]>([])
+const loading = ref<boolean>(true)
+const error = ref<string | null>(null)
+const clear_input = ref<boolean>(false)
+const successful_search = ref<boolean>(true)
+const sheard = ref<string>('')
+const number_results = ref<number>(0)
+const ordering_by = ref<'Price' | 'Size'>('Price')
+const activeButton = ref<'Price' | 'Size'>('Price')
+
+const router = useRouter()
+
+onMounted(async () => {
+  await getDates()
+})
+
+const getDates = async () => {
+  try {
+    loading.value = true
+    await homeService.fetchAll()
+    houses.value = homeService.houses.value
+    filtered_houses.value = houses.value
+    filtering_hauses(ordering_by.value)
+  } catch (err) {
+    error.value = 'Error to obtain the houses'
+    console.error(err)
+  } finally {
+    loading.value = false
+  }
+}
+
+const filtering_locations = () => {
+  if (!sheard.value) {
+    successful_search.value = true
+    filtered_houses.value = houses.value
+    number_results.value = 0
+    clear_input.value = false
+  } else {
+    clear_input.value = true
+    const searchTerm = sheard.value.toLowerCase()
+    filtered_houses.value = houses.value.filter((house) => {
+      const zip = house.location?.zip?.toLowerCase() || ''
+      const city = house.location?.city?.toLowerCase() || ''
+      return zip.includes(searchTerm) || city.includes(searchTerm)
+    })
+
+    number_results.value = filtered_houses.value.length
+    successful_search.value = number_results.value > 0
+  }
+}
+
+watch(sheard, filtering_locations)
+
+const clear_imput = () => {
+  sheard.value = ''
+  successful_search.value = true
+  number_results.value = 0
+}
+
+const filtering_hauses = (new_ordering: 'Price' | 'Size') => {
+  if (ordering_by.value !== new_ordering) {
+    ordering_by.value = new_ordering
+    filtered_houses.value = [...filtered_houses.value].sort((a, b) => {
+      if (new_ordering === 'Price') return a.price - b.price
+      if (new_ordering === 'Size') return a.size - b.size
+      return 0
+    })
+    activeButton.value = new_ordering
+  }
+}
+
+const goToNewHause = () => {
+  router.push({ name: 'NewHouse' })
+}
+
+const goToDeleteHouse = (houseId: number) => {
+  router.push({ name: 'HouseDetail', params: { id: houseId }, query: { delete: 'true' } })
+}
+
+const goToEditHouse = (id: number) => {
+  router.push({ name: 'EditHouse', params: { id } })
+}
 </script>
 
 <style scoped>
+.row1{
+  height: 150px;
+}
 h1 {
   font-family: 'Montserrat', sans-serif;
+  align-content: center;
 }
 
-.icon {
-  width: 24px;
-  height: 24px;
-}
 #button_create_new{
   background-color: #eb5440;
   color: #ffffff;
   height: 30px;
   width: 150px;
-  text-align: center;
   border-radius: 7px;
   border: none;
   cursor: pointer;
+  align-self: center;
+
+}
+
+.input_container button {
+  all: unset;
+  right: 5%;
+  bottom: 15%;
+  cursor: pointer;
+}
+
+
+input{
+height: 35px;
+width: 300px;
+border-radius: 5px;
+border: 1px solid #ccc;
+background-color: #E8E8E8;
+border: none;
+padding-left: 40px !important;
+
+
+}
+input::placeholder{
+padding-left: 5%;
+}
+
+
+.icon {
+  width: 20px;
+  height: 20px;
+  position: absolute;
+}
+#icon-search{
+  position: absolute;
+  left: 5%;
+  top: 20%;
+}
+
+#icon-clean{
+right: 5%;
+bottom: 15%;
+}
+.button_container{
+  position: absolute;
+  display: flex;
+
+}
+
+.button_container button{
+  background-color: #EB5440;
+  color: white;
+  cursor: pointer;
+  height: 30px;
+  width: 120px;
+  border-radius: 7px;
+  border: none;
+
+}
+/*  Card Items div */
+.card-hauses-wrapper > * {
+  margin-top: 20px !important;;
+}
+
+/* Vista móvil */
+@media (max-width: 576px) {
+  .row1 {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .row1 h1 {
+    text-align: center;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .row1 .d-flex.justify-content-between {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .input_container {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  input {
+    width: 100%;
+  }
+
+  .button_container {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    position: static;
+    width: 100%;
+  }
+
+  .button_container button {
+    width: 100%;
+    max-width: 300px;
+  }
 }
 </style>
