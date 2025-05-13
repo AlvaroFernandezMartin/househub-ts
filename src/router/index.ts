@@ -5,7 +5,6 @@ import AboutInformation from '../views/AboutInformation.vue'
 import AddNewHouse from '../views/AddNewHouse.vue'
 import HouseDetail from '../views/HouseDetail.vue'
 import EditHouse from '../views/EditHouse.vue'
-import NewHomePage from '@/views/NewHomePage.vue'
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
@@ -16,11 +15,7 @@ const routes: RouteRecordRaw[] = [
     name: 'Home',
     component: HomePage,
   },
-  {
-    path: '/home2',
-    name: 'Home2',
-    component: NewHomePage,
-  },
+
   {
     path: '/about',
     name: 'About',

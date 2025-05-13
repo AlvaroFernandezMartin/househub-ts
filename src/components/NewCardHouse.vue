@@ -1,45 +1,56 @@
 <template>
   <div class="container-fluid">
     <div class="row flex-nowrap">
-      <div class="col-2  img-container ">
+      <div class="col-2 img-container">
         <button @click="goToHouse">
-          <img :src="house.image" alt="Casa"  />
+          <img :src="house.image" alt="Casa" />
         </button>
       </div>
       <div class="col-8">
         <div class="row">
-          <div class="col-12">
-              <h3 class="street_name">{{ house.location.street }} {{ house.location.houseNumber }}</h3>
+          <div class="col-12 pt-3">
+            <h3 class="street_name">
+              {{ house.location.street }} {{ house.location.houseNumber }}
+            </h3>
+          </div>
+          <div class="col-12 pt-2">
+            <label class="label_money">€ {{ house.price }}</label>
+          </div>
+          <div class="col-12 pt-2">
+            <label class="location_name me-2">{{ house.location.zip }} {{ house.location.city }}</label>
+            <label class="label_city">{{ house.location.city }}</label>
           </div>
           <div class="col-12">
-        <label class="label_money">€ {{ house.price }}</label>
-          </div>
-          <div class="col-12">
-        <label class="location_name">{{ house.location.zip }} {{ house.location.city }}</label>
-        <label class="label_city">{{ house.location.city }}</label>
-          </div>
-          <div class="col-12">
-              <span>
-                    <img src="../assets/ic_bed@3x.png" alt="Cama" class="icon" />
-                    <span>{{ house.rooms.bedrooms }}</span>
-                  </span>
-                  <span>
-                    <img src="../assets/ic_bath@3x.png" alt="Baño" class="icon" />
-                    <span>{{ house.rooms.bathrooms }}</span>
-                  </span>
-                  <span>
-                    <img src="../assets/ic_size@3x.png" alt="Metros cuadrados" class="icon" />
-                    <span>{{ house.size }} m²</span>
-                  </span>
+            <span class="me-2">
+              <img src="../assets/ic_bed@3x.png" alt="Cama" class="icon me-1" />
+              <span>{{ house.rooms.bedrooms }}</span>
+            </span>
+            <span class="me-2">
+              <img src="../assets/ic_bath@3x.png" alt="Baño" class="icon me-1" />
+              <span>{{ house.rooms.bathrooms }}</span>
+            </span>
+            <span class="me-2">
+              <img src="../assets/ic_size@3x.png" alt="Metros cuadrados" class="icon me-1" />
+              <span>{{ house.size }} m²</span>
+            </span>
           </div>
         </div>
-
       </div>
-      <div class="col-2 bg-info">
-         <div v-if="all_icons" class="icons-right">
-           <img src="../assets/ic_edit@3x.png" @click="emitEditHouse" alt="Editar" class="action-icon" />
-           <img src="../assets/ic_delete@3x.png" @click="emitDelHouse" alt="Borrar" class="action-icon" />
-         </div>
+      <div class="col-2  d-flex justify-content-center align-items-start pt-3">
+        <div v-if="all_icons" class="d-flex gap-2 flex-wrap">
+          <img
+            src="../assets/ic_edit@3x.png"
+            @click="emitEditHouse"
+            alt="Editar"
+            class="action-icon"
+          />
+          <img
+            src="../assets/ic_delete@3x.png"
+            @click="emitDelHouse"
+            alt="Borrar"
+            class="action-icon"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -50,8 +61,6 @@ import { useRouter } from 'vue-router'
 import type { House } from '@/services/HomeService'
 
 const router = useRouter()
-
-
 
 const props = defineProps<{
   house: House
@@ -76,12 +85,10 @@ const emitDelHouse = () => {
 }
 </script>
 
-
 <style scoped>
 .container-fluid {
   background-color: #ffffff;
   border-radius: 7px;
-  padding: 10px;
 }
 
 /* Imagen principal */
@@ -92,6 +99,7 @@ const emitDelHouse = () => {
   height: 150px;
   width: 150px;
 }
+
 .img-container img {
   height: 125px;
   width: 125px;
@@ -116,7 +124,6 @@ button {
   font-size: 18px;
   font-family: 'Open Sans', sans-serif;
   font-weight: 800;
-  margin: 5px 0;
 }
 
 .label_money {
@@ -124,7 +131,6 @@ button {
   font-family: 'Montserrat', sans-serif;
   font-weight: 600;
   color: #2c2c2c;
-  margin-bottom: 3px;
   display: inline-block;
 }
 
@@ -132,13 +138,12 @@ button {
   font-size: 14px;
   font-family: 'Open Sans', sans-serif;
   color: #555;
-  margin-left: 10px;
 }
 
 .location_name {
   font-size: 14px;
   font-family: 'Open Sans', sans-serif;
-  color: #C3C3C3;
+  color: #c3c3c3;
   font-weight: 300;
 }
 
@@ -146,26 +151,5 @@ button {
 .icon {
   height: 15px;
   width: 15px;
-  margin: 0 5px;
-  vertical-align: middle;
-}
-
-/* Espaciado general para la línea de iconos */
-.col-12 > span {
-  margin-right: 15px;
-  font-family: 'Open Sans', sans-serif;
-  font-size: 14px;
-  color: #333;
-}
-
-/* Alineación de los iconos a la derecha */
-.icons-right {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  height: 100%;
 }
 </style>
-

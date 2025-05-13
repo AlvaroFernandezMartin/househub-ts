@@ -1,63 +1,63 @@
 <template>
-  <div class="columns-div">
-    <div class="left"></div>
-    <div class="main">
-      <div class="action-div">
-        <h1>Houses</h1>
-        <button id="button_create_new" @click="goToNewHause">+ CREATE NEW</button>
-        <div class="input-div">
-          <img id="img_search" src="../assets/ic_search@3x.png" alt="Buscar" class="icon" />
-          <input type="text" placeholder="Search for a house" v-model="sheard" />
-          <button @click="clear_imput" id="button_clear">
-            <img
-              v-if="clear_input"
-              id="img_clear"
-              src="../assets/ic_clear@3x.png"
-              alt="clear_input"
-              class="icon"
-            />
-          </button>
+  <div class="container-fluid ">
+    <div class="row justify-content-center min-vh-100 ">
+
+      <!-- Lateral izquierdo, visible solo en sm+ -->
+      <aside class="d-none d-sm-block col-sm-2 "></aside>
+
+      <!-- Contenido central -->
+      <main class="col-12 col-sm-8 ">
+        <div class="row row1">
+          <div class="d-flex justify-content-between pt-4">
+            <h1 class="fw-bold ">Houses</h1>
+            <button id="button_create_new" @click="goToNewHause">+ CREATE NEW</button>
+          </div>
+
+          <div class="col-12 col-sm-6   d-flex align-items-end bg-inf ">
+            <div class="input_container position-relative">
+              <img src="../assets/ic_search@3x.png" alt="Buscar" id="icon-search" class="icon " />
+              <input type="text" placeholder="Search for a house" v-model="sheard" class="ps-5" />
+              <button>
+                <img src="../assets/ic_clear@3x.png" @click="clear_imput" v-if="sheard" alt="clear" id="icon-clean"
+                  class="icon" />
+              </button>
+
+            </div>
+
+          </div>
+          <div class="col-12 col-sm-6 d-flex justify-content-end align-items-end">
+            <div class="button_container">
+              <button id="button_price" :style="{ backgroundColor: activeButton === 'Price' ? '#EB5440' : '#E8E8E8' }"
+                @click="filtering_hauses('Price')">Price</button>
+              <button id="button_size" :style="{ backgroundColor: activeButton === 'Size' ? '#EB5440' : '#E8E8E8' }"
+                @click="filtering_hauses('Size')">Size</button>
+            </div>
+          </div>
+
         </div>
-        <div class="button-div">
-          <button
-            id="button_price"
-            :style="{ backgroundColor: activeButton === 'Price' ? '#EB5440' : '#E8E8E8' }"
-            @click="filtering_hauses('Price')"
-          >
-            Price
-          </button>
-          <button
-            id="button_size"
-            :style="{ backgroundColor: activeButton === 'Size' ? '#EB5440' : '#E8E8E8' }"
-            @click="filtering_hauses('Size')"
-          >
-            Size
-          </button>
+        <div class="row h-75">
+          <div v-if="successful_search" class="pt-3">
+            <h3 v-if="number_results > 0">{{ number_results }} results found</h3>
+            <NewCardHouse class="mt-3" v-for="house in filtered_houses" :key="house.id" :house="house" :all_icons="true"
+              @delete-house="goToDeleteHouse" @edit-house="goToEditHouse(house.id)" />
+          </div>
+
+          <div v-else-if="sheard && number_results === 0"
+            class="d-flex flex-column align-items-center text-center mt-5">
+
+            <img id="img_empty_houses" src="../assets/img_empty_houses@3x.png" alt="No results found" />
+            <label>No results found.</label>
+            <label>Please key another keyword.</label>
+          </div>
+
+          <div v-if="loading">Loading houses...</div>
+          <div v-if="error">{{ error }}</div>
         </div>
-      </div>
+      </main>
 
-      <div v-if="successful_search" class="card-hauses-div">
-        <h3 v-if="number_results > 0">{{ number_results }} results found</h3>
-        <CardHouse
-          v-for="house in filtered_houses"
-          :key="house.id"
-          :house="house"
-          :all_icons="true"
-          @delete-house="goToDeleteHouse"
-          @edit-house="goToEditHouse(house.id)"
-        />
-      </div>
-
-      <div v-else-if="sheard && number_results === 0" id="div_empty_houses">
-        <img id="img_empty_houses" src="../assets/img_empty_houses@3x.png" alt="No results found" />
-        <label>No results found.</label>
-        <label>Please key another keyword.</label>
-      </div>
-
-      <div v-if="loading">Loading houses...</div>
-      <div v-if="error">{{ error }}</div>
+      <!-- Lateral derecho, visible solo en sm+ -->
+      <aside class="d-none d-sm-block col-sm-2 "></aside>
     </div>
-    <div class="right"></div>
   </div>
 </template>
 
@@ -65,7 +65,7 @@
 import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import HomeService, { type House } from '@/services/HomeService'
-import CardHouse from '@/components/CardHouse.vue'
+import NewCardHouse from '@/components/NewCardHouse.vue'
 
 const homeService = new HomeService()
 const houses = ref<House[]>([])
@@ -154,143 +154,127 @@ const goToEditHouse = (id: number) => {
 </script>
 
 <style scoped>
-.columns-div {
-  display: flex;
-  min-height: 100vh;
-  margin: 0;
-  background-color: #f4f4f4;
-}
-
-.left {
-  width: 15%;
-}
-
-.main {
-  flex: 3;
-}
-
-.right {
-  width: 15%;
-}
-
-.action-div {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto auto;
+.row1 {
+  height: 150px;
 }
 
 h1 {
-  text-align: left;
-  margin-top: 40px;
   font-family: 'Montserrat', sans-serif;
+  align-content: center;
 }
 
-input {
-  background-color: #e8e8e8;
-  margin-top: 20px;
-}
-
-.input-div {
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 300px;
-}
-
-.input-div input {
-  width: 100%;
-  padding: 10px 10px 10px 35px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-#img_search {
-  position: absolute;
-  left: 10px;
-  width: 20px;
-  height: 20px;
-  margin-top: 20px;
-}
-
-#button_clear {
-  position: absolute;
-  margin-left: 90%;
-  border: 0px;
-  cursor: pointer;
-  background: none;
-}
-
-#img_clear {
-  left: 90%;
-  width: 20px;
-  height: 20px;
-  margin-top: 20px;
-}
-
-#div_empty_houses {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-#div_empty_houses img {
-  max-width: 30%;
-  height: auto;
-  margin-top: 10%;
-  margin-bottom: 50px;
-}
-
-#div_empty_houses label {
-  font-family: 'Montserrat', sans-serif;
-  color: #4a4b4c;
-  font-weight: 300;
-}
-
-/*  Button Styles (Create, Filter) */
 #button_create_new {
   background-color: #eb5440;
   color: #ffffff;
   height: 30px;
   width: 150px;
-  text-align: center;
   border-radius: 7px;
   border: none;
-  align-self: end;
-  margin-left: 70%;
+  cursor: pointer;
+  align-self: center;
+
+}
+
+.input_container button {
+  all: unset;
   cursor: pointer;
 }
 
-.button-div button {
-  margin-top: 30px;
+
+input {
+  height: 35px;
+  width: 350px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  background-color: #E8E8E8;
+  border: none;
+
+
+}
+
+input::placeholder {
+  padding-left: 5%;
+}
+
+
+.icon {
+  width: 20px;
+  height: 20px;
+  position: absolute;
+}
+
+#icon-search {
+  position: absolute;
+  left: 5%;
+  top: 20%;
+}
+
+#icon-clean {
+  right: 5%;
+  bottom: 15%;
+}
+
+.button_container {
+  position: absolute;
+  display: flex;
+
+}
+
+.button_container button {
+  background-color: #EB5440;
+  color: white;
+  cursor: pointer;
   height: 30px;
   width: 120px;
-  color: #ffffff;
-  text-align: center;
   border-radius: 7px;
   border: none;
+
 }
 
-#button_price {
-  background-color: #eb5440;
-  margin-left: 51%;
-  cursor: pointer;
+#img_empty_houses {
+  height: 200px;
+  width: auto;
 }
 
-#button_size {
-  background-color: #e8e8e8;
-  cursor: pointer;
-}
+/* Vista móvil */
+@media (max-width: 576px) {
+  .row1 {
+    flex-direction: column;
+    height: auto;
+  }
 
-/*  Card Items div */
-.card-hauses-div > * {
-  margin-top: 20px;
-}
+  .row1 h1 {
+    text-align: center;
+    width: 100%;
+    margin-bottom: 10px;
+  }
 
-h3 {
-  font-family: 'Montserrat', sans-serif;
-  display: block;
-  margin-top: 20px;
+  .row1 .d-flex.justify-content-between {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .input_container {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  input {
+    width: 100%;
+  }
+
+  .button_container {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    position: static;
+    width: 100%;
+  }
+
+  .button_container button {
+    width: 100%;
+    max-width: 300px;
+  }
 }
 </style>
