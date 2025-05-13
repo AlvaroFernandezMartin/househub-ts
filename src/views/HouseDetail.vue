@@ -1,77 +1,85 @@
 <template>
-  <div class="container">
-    <div class="column-left"></div>
-    <div class="column-main">
-      <div v-if="loading">Loading house...</div>
-      <div v-if="error">{{ error }}</div>
+  <div class="container-fluid">
+    <div class="row min-vh-100">
 
-      <div class="exit-container">
-        <button @click="goToHomePage" id="button_back">
-          <img src="../assets/ic_back_grey@3x.png" alt="exit_arrow" />
-        </button>
-        <label>Back to overview</label>
-      </div>
+      <!-- Columna izquierda (solo visible en sm+) -->
+      <div class="d-none d-sm-block col-sm-2 col-lg-2"></div>
 
-      <div class="house_container">
-        <ConfirmationDeleteDialog
-          v-if="showConfirmation"
-          @confirm="confirmDelete"
-          @cancel="cancelDelete"
-        />
-        <img :src="image" class="house_img" alt="house_img" />
-        <div class="house_details">
-          <div class="header">
-            <h1>{{ street }}</h1>
-            <div class="icons-right">
-              <img
-                src="../assets/ic_edit@3x.png"
-                @click="goToEditHouse"
-                alt="Editar"
-                class="header_icon"
-              />
-              <img
-                src="../assets/ic_delete@3x.png"
-                @click="delHouse"
-                alt="Borrar"
-                class="header_icon"
-              />
+      <!-- Columna principal -->
+      <div class="col-12 col-sm-8 col-lg-6">
+        <div v-if="loading">Loading house...</div>
+        <div v-if="error">{{ error }}</div>
+
+        <div class="d-flex align-items-center mb-4 mt-4">
+          <button @click="goToHomePage" id="button_back" class="btn me-2">
+            <img src="../assets/ic_back_grey@3x.png" alt="exit_arrow" />
+          </button>
+          <label class="fw-bold">Back to overview</label>
+        </div>
+
+        <div>
+          <ConfirmationDeleteDialog v-if="showConfirmation" @confirm="confirmDelete" @cancel="cancelDelete" />
+
+
+          <!-- CONTENEDOR COMÚN -->
+          <div class="house_wrapper ">
+            <img :src="image" class="imagen img-fluid mb-3" alt="house_img" />
+
+            <div class="house_details">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h1 class="fs-4">{{ street }}</h1>
+                <div class="d-flex gap-2">
+                  <img src="../assets/ic_edit@3x.png" @click="goToEditHouse" alt="Editar" class="header_icon" />
+                  <img src="../assets/ic_delete@3x.png" @click="delHouse" alt="Borrar" class="header_icon" />
+                </div>
+              </div>
+
+              <div class="d-flex align-items-center mb-2">
+                <img src="../assets/ic_location@3x.png" class="small_icon me-2" />
+                <p class="mb-0">{{ address }}</p>
+              </div>
+
+              <div class="d-flex align-items-center flex-wrap gap-3 mb-2">
+                <div class="d-flex align-items-center">
+                  <img src="../assets/ic_price@3x.png" class="small_icon me-2" />
+                  <p class="mb-0">{{ price }}</p>
+                </div>
+                <div class="d-flex align-items-center">
+                  <img src="../assets/ic_size@3x.png" class="small_icon me-2" />
+                  <p class="mb-0">{{ size }} m²</p>
+                </div>
+                <div class="d-flex align-items-center">
+                  <img src="../assets/ic_construction_date@3x.png" class="small_icon me-2" />
+                  <p class="mb-0">Built in {{ constructionYear }}</p>
+                </div>
+              </div>
+
+              <div class="d-flex align-items-center flex-wrap gap-3 mb-2">
+                <div class="d-flex align-items-center">
+                  <img src="../assets/ic_bed@3x.png" class="small_icon me-2" />
+                  <p class="mb-0">{{ bedrooms }}</p>
+                </div>
+                <div class="d-flex align-items-center">
+                  <img src="../assets/ic_bath@3x.png" class="small_icon me-2" />
+                  <p class="mb-0">{{ bathrooms }}</p>
+                </div>
+                <div class="d-flex align-items-center">
+                  <img src="../assets/ic_garage@3x.png" class="small_icon me-2" />
+                  <p class="mb-0">{{ hasGarage ? 'Yes' : 'No' }}</p>
+                </div>
+              </div>
+
+              <p class="mt-4">{{ description }}</p>
             </div>
           </div>
-          <div class="flex_container">
-            <img src="../assets/ic_location@3x.png" class="small_icon" />
-            <p>{{ address }}</p>
-          </div>
-
-          <div class="flex_container">
-            <img src="../assets/ic_price@3x.png" class="small_icon" />
-            <p>{{ price }}</p>
-            <img src="../assets/ic_size@3x.png" class="small_icon" />
-            <p>{{ size }} m²</p>
-            <img src="../assets/ic_construction_date@3x.png" class="small_icon" />
-            <p>Built in {{ constructionYear }}</p>
-          </div>
-
-          <div class="flex_container">
-            <img src="../assets/ic_bed@3x.png" class="small_icon" />
-            <p>{{ bedrooms }}</p>
-            <img src="../assets/ic_bath@3x.png" class="small_icon" />
-            <p>{{ bathrooms }}</p>
-            <img src="../assets/ic_garage@3x.png" class="small_icon" />
-            <p v-if="hasGarage">Yes</p>
-            <p v-else>No</p>
-          </div>
-          <p class="house_descripcion">{{ description }}</p>
         </div>
       </div>
-    </div>
-    <div class="column-right">
-      <h3 class="title_hause_recommended">Recommended for you</h3>
-      <CardHouse
-        v-for="house in houses_recomended.slice(0, 3)"
-        :key="house.id"
-        :house="house"
-        class="CardHause"
-      />
+
+      <!-- Columna derecha -->
+      <div class="col-md-4 col-lg-4">
+        <h4 class="mb-4 mt-4">Recommended for you</h4>
+        <NewCardHouse v-for="house in houses_recomended.slice(0, 3)" :key="house.id" :house="house" class="mb-3" />
+      </div>
     </div>
   </div>
 </template>
@@ -81,7 +89,7 @@ import { onMounted, ref, watch, type Ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import HomeService from '@/services/HomeService'
 import type { House } from '@/services/HomeService'
-import CardHouse from '@/components/CardHouse.vue'
+import NewCardHouse from '@/components/CardHouse.vue'
 import ConfirmationDeleteDialog from '@/components/ConfirmationDeleteDialog.vue'
 
 const homeService = new HomeService()
@@ -125,10 +133,8 @@ const loadHouseData = async () => {
       house.value = data
     } else {
       error.value = 'House not found'
-
     }
 
-    // Cargar campos individuales
     street.value = `${house.value.location?.street ?? ''} ${house.value.location?.houseNumber ?? ''}`
     address.value = `${house.value.location?.zip ?? ''} ${house.value.location?.city ?? ''}`
     price.value = house.value.price ?? 0
@@ -181,6 +187,7 @@ const cancelDelete = () => {
 
 const delHouse = () => {
   showConfirmation.value = true
+  console.log('clicked')
 }
 
 const goToEditHouse = () => {
@@ -193,108 +200,29 @@ const goToHomePage = () => {
 </script>
 
 <style scoped>
-.container {
-  display: flex;
-  width: 100%;
-}
-
-.column-left {
-  width: 15%;
-  height: 100vh;
-  background-color: #f6f6f6;
-}
-
-.column-main {
-  width: 50%;
-  height: 100vh;
-  background-color: #f6f6f6;
-}
-.column-right {
-  width: 35%;
-  height: 100vh;
-  background-color: #f6f6f6;
-}
-
-.exit-container {
-  display: flex;
-  margin-top: 2.5%;
-  margin-bottom: 2.5%;
-}
-.exit-container label {
-  color: #000000;
-  font-family: 'Open Sans', sans-serif;
-  font-weight: bold;
-  display: block;
-}
-#button_back {
-  all: unset;
-  cursor: pointer;
-}
 #button_back img {
   height: 25px;
   width: auto;
-  margin-right: 15px;
-}
-/* House datails */
-p {
-  color: #4a4b4c;
-  margin-right: 20px;
-}
-.house_img {
-  max-width: 100%;
-  height: auto;
-}
-.house_container {
-  max-width: 85%;
-  height: auto;
-  background-color: #ffffff;
-}
-
-.house_details {
-  margin-top: 2.5%;
-  margin-left: 2.5%;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 5px;
-}
-.icons-right {
-  display: flex;
-  gap: 10px;
 }
 
 .header_icon {
   height: 25px;
   width: 25px;
   cursor: pointer;
-  margin-right: 20px;
-}
-
-.flex_container {
-  display: flex;
-  margin-top: 15px;
 }
 
 .small_icon {
   height: 15px;
   width: 15px;
-  margin-right: 15px;
 }
 
-.house_descripcion {
-  margin-top: 25px;
-  line-height: 25px;
+.imagen {
+  max-width: 100%;
+  height: auto;
 }
-/* Hauses recommended */
 
-.title_hause_recommended {
-  margin-top: 12%;
-}
-.CardHause {
-  margin-top: 20px;
-  width: 70%;
+.house_wrapper {
+  max-width: 600px;
+  width: 100%;
 }
 </style>

@@ -65,7 +65,7 @@
 import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import HomeService, { type House } from '@/services/HomeService'
-import NewCardHouse from '@/components/NewCardHouse.vue'
+import NewCardHouse from '@/components/CardHouse.vue'
 
 const homeService = new HomeService()
 const houses = ref<House[]>([])

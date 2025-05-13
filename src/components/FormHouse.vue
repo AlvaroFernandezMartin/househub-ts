@@ -139,7 +139,7 @@ onMounted(async () => {
   if (props.id) {
     try {
       const houseData = await homeService.fetchById(props.id)
-      const house = houseData 
+      const house = houseData
 
       if (!house) return
 
