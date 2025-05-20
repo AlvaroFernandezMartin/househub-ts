@@ -21,7 +21,6 @@ export interface House {
   constructionYear: number
   hasGarage: boolean
   createdAt: string
-  madeByMe: boolean
 }
 
 export default class HomeService {
@@ -33,26 +32,18 @@ export default class HomeService {
 
   private get jsonHeaders() {
     return {
-      'X-Api-Key': 'mnqeLZXt5cd61uCDaUhrWwgJo3s2iYvy',
       'Content-Type': 'application/json',
     }
   }
 
-  private get authHeader() {
-    return {
-      'X-Api-Key': 'mnqeLZXt5cd61uCDaUhrWwgJo3s2iYvy',
-    }
-  }
-
-  //  Obtener todas las casas
+  // Obtener todas las casas
   async fetchAll() {
-    const url = 'https://api.intern.d-tt.nl/api/houses'
+    const url = 'http://127.0.0.1:8000/api/houses/'
     try {
       const response = await fetch(url, {
         method: 'GET',
         headers: this.jsonHeaders,
       })
-
       if (response.ok) {
         this.houses.value = await response.json() as House[]
       } else {
@@ -63,21 +54,16 @@ export default class HomeService {
     }
   }
 
-  //  Obtener una casa por ID
+  // Obtener una casa por ID
   async fetchById(houseId: number): Promise<House | undefined> {
-    const url = `https://api.intern.d-tt.nl/api/houses/${houseId}`
+    const url = `http://127.0.0.1:8000/api/houses/${houseId}`
     try {
       const response = await fetch(url, {
         method: 'GET',
-        headers: {
-          'X-Api-Key': 'mnqeLZXt5cd61uCDaUhrWwgJo3s2iYvy',
-          'Content-Type': 'application/json',
-        },
+        headers: this.jsonHeaders,
       })
-
       if (response.ok) {
-        const houses: House[] = await response.json()
-        return houses[0]
+        return await response.json()
       } else {
         console.error('Error fetching the house:', response.status)
       }
@@ -86,17 +72,15 @@ export default class HomeService {
     }
   }
 
-
-  //  Crear casa
+  // Crear casa
   async createHouse(data: Partial<House>): Promise<number | undefined> {
-    const url = 'https://api.intern.d-tt.nl/api/houses'
+    const url = 'http://127.0.0.1:8000/api/houses/create/'
     try {
       const response = await fetch(url, {
         method: 'POST',
         headers: this.jsonHeaders,
         body: JSON.stringify(data),
       })
-
       if (response.ok) {
         const result = await response.json()
         return result.id
@@ -108,23 +92,21 @@ export default class HomeService {
     }
   }
 
-  //  Subir imagen
+  // Subir imagen
   async insertImg(houseId: number, image: File): Promise<string | undefined> {
-    const url = `https://api.intern.d-tt.nl/api/houses/${houseId}/upload`
+    const url = `http://127.0.0.1:8000/api/houses/${houseId}/upload/`
     const formData = new FormData()
     formData.append('image', image)
 
     try {
       const response = await fetch(url, {
         method: 'POST',
-        headers: this.authHeader,
         body: formData,
       })
-
       if (response.ok) {
-        const data: string = await response.json()
+        const data = await response.json()
         console.log('Image uploaded successfully:', data)
-        return data
+        return data.image
       } else {
         console.error('Error uploading image:', response.status, response.statusText)
       }
@@ -133,16 +115,13 @@ export default class HomeService {
     }
   }
 
-  //  Eliminar casa
+  // Eliminar casa
   async deleteHouse(houseId: number): Promise<void> {
-    const url = `https://api.intern.d-tt.nl/api/houses/${houseId}`
-
+    const url = `http://127.0.0.1:8000/api/houses/${houseId}/delete/`
     try {
       const response = await fetch(url, {
         method: 'DELETE',
-        headers: this.authHeader,
       })
-
       if (response.ok) {
         console.log('House deleted successfully')
       } else {
@@ -153,17 +132,15 @@ export default class HomeService {
     }
   }
 
-  //  Actualizar casa
+  // Actualizar casa
   async updateHouse(houseId: number, data: Partial<House>): Promise<void> {
-    const url = `https://api.intern.d-tt.nl/api/houses/${houseId}`
-
+    const url = `http://127.0.0.1:8000/api/houses/${houseId}/update/`
     try {
       const response = await fetch(url, {
-        method: 'POST',
+        method: 'PUT',
         headers: this.jsonHeaders,
         body: JSON.stringify(data),
       })
-
       if (response.ok) {
         console.log('House updated successfully')
       } else {
