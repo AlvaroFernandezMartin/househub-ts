@@ -83,6 +83,8 @@ const emitEditHouse = () => {
 const emitDelHouse = () => {
   emit('delete-house', props.house.id)
 }
+
+
 </script>
 
 <style scoped>

@@ -38,7 +38,7 @@
         <div class="row h-75">
           <div v-if="successful_search" class="pt-3">
             <h3 v-if="number_results > 0">{{ number_results }} results found</h3>
-            <NewCardHouse class="mt-3" v-for="house in filtered_houses" :key="house.id" :house="house" :all_icons="true"
+            <CardHouse class="mt-3" v-for="house in filtered_houses" :key="house.id" :house="house" :all_icons="true"
               @delete-house="goToDeleteHouse" @edit-house="goToEditHouse(house.id)" />
           </div>
 
@@ -65,7 +65,7 @@
 import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import HomeService, { type House } from '@/services/HomeService'
-import NewCardHouse from '@/components/CardHouse.vue'
+import CardHouse from '@/components/CardHouse.vue'
 
 const homeService = new HomeService()
 const houses = ref<House[]>([])
