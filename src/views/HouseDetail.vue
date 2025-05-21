@@ -28,10 +28,11 @@
             <div class="house_details">
               <div class="d-flex justify-content-between align-items-center mb-2">
                 <h1 class="fs-4">{{ street }}</h1>
-                <div class="d-flex gap-2">
+                <div class="d-flex gap-2" v-if="house.user === currentUser?.username">
                   <img src="../assets/ic_edit@3x.png" @click="goToEditHouse" alt="Editar" class="header_icon" />
                   <img src="../assets/ic_delete@3x.png" @click="delHouse" alt="Borrar" class="header_icon" />
                 </div>
+
               </div>
 
               <div class="d-flex align-items-center mb-2">
@@ -91,6 +92,11 @@ import HomeService from '@/services/HomeService'
 import type { House } from '@/services/HomeService'
 import NewCardHouse from '@/components/CardHouse.vue'
 import ConfirmationDeleteDialog from '@/components/ConfirmationDeleteDialog.vue'
+import { useUserStore } from '@/stores/user_info'
+
+const userStore = useUserStore()
+const currentUser = userStore.user
+
 
 const homeService = new HomeService()
 const route = useRoute()

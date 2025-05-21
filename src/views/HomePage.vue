@@ -37,8 +37,16 @@
         <div class="row h-75">
           <div v-if="successful_search" class="pt-3">
             <h3 v-if="number_results > 0">{{ number_results }} results found</h3>
-            <CardHouse class="mt-3" v-for="house in filtered_houses" :key="house.id" :house="house" :all_icons="true"
-              @delete-house="goToDeleteHouse" @edit-house="goToEditHouse(house.id)" />
+            <CardHouse
+              class="mt-3"
+              v-for="house in filtered_houses"
+              :key="house.id"
+              :house="house"
+              :all_icons="house.user === currentUser?.username"
+              @delete-house="goToDeleteHouse"
+              @edit-house="goToEditHouse(house.id)"
+          />
+
           </div>
 
           <div v-else-if="sheard && number_results === 0"
@@ -84,6 +92,7 @@ const router = useRouter()
 onMounted(async () => {
   const userStore = useUserStore()
   currentUser.value = userStore.user
+  console.log(currentUser.value)
   await getDates()
 })
 
@@ -92,7 +101,7 @@ const getDates = async () => {
     loading.value = true
     await homeService.fetchAll()
     houses.value = homeService.houses.value
-    filtered_houses.value = [...houses.value] // copia nueva
+    filtered_houses.value = [...houses.value]
     filtering_hauses(ordering_by.value)
   } catch (err) {
     error.value = 'Error to obtain the houses'
