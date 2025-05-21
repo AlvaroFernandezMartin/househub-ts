@@ -22,7 +22,6 @@
 </template>
 
 <script lang="ts" setup>
-// No logic needed
 </script>
 
 <style scoped>

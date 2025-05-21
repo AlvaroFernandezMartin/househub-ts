@@ -34,7 +34,9 @@ export default class HomeService {
   async fetchAll() {
     const url = 'http://127.0.0.1:8000/api/houses/'
     try {
-      const response = await fetch(url)
+      const response = await fetch(url, {
+        method: 'GET',
+      })
       if (response.ok) {
         this.houses.value = await response.json() as House[]
       } else {
@@ -49,7 +51,9 @@ export default class HomeService {
   async fetchById(houseId: number): Promise<House | undefined> {
     const url = `http://127.0.0.1:8000/api/houses/${houseId}`
     try {
-      const response = await fetch(url)
+      const response = await fetch(url, {
+        method: 'GET',
+      })
       if (response.ok) return await response.json()
       else console.error('Error fetching the house:', response.status)
     } catch (error) {
@@ -57,12 +61,13 @@ export default class HomeService {
     }
   }
 
-  // Crear casa con FormData
+  // Crear casa
   async createHouse(data: FormData): Promise<number | undefined> {
     const url = 'http://127.0.0.1:8000/api/houses/create/'
     try {
       const response = await fetch(url, {
         method: 'POST',
+        credentials: 'include',
         body: data,
       })
       if (response.ok) {
@@ -76,12 +81,13 @@ export default class HomeService {
     }
   }
 
-  // Actualizar casa con FormData
+  // Actualizar casa
   async updateHouse(houseId: number, data: FormData): Promise<void> {
     const url = `http://127.0.0.1:8000/api/houses/${houseId}/update/`
     try {
       const response = await fetch(url, {
         method: 'POST',
+        credentials: 'include',
         body: data,
       })
       if (!response.ok) {
@@ -98,6 +104,7 @@ export default class HomeService {
     try {
       const response = await fetch(url, {
         method: 'DELETE',
+        credentials: 'include', 
       })
       if (!response.ok) {
         console.error('Error deleting house:', response.status, response.statusText)
@@ -106,4 +113,16 @@ export default class HomeService {
       console.error('Error deleting house:', error)
     }
   }
+
 }
+
+   // UserService.ts
+   export async function fetchCurrentUser(): Promise<{ id: number, username: string } | null> {
+    const response = await fetch('http://127.0.0.1:8000/api/auth/me/', {
+      credentials: 'include',
+    })
+    if (response.ok) {
+      return await response.json()
+    }
+    return null
+  }

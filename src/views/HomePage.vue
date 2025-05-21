@@ -12,7 +12,6 @@
             <h1 class="fw-bold ">Houses</h1>
             <button id="button_create_new" @click="goToNewHause">+ CREATE NEW</button>
           </div>
-
           <div class="col-12 col-sm-6   d-flex align-items-end bg-inf ">
             <div class="input_container position-relative">
               <img src="../assets/ic_search@3x.png" alt="Buscar" id="icon-search" class="icon " />
@@ -66,7 +65,9 @@ import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import HomeService, { type House } from '@/services/HomeService'
 import CardHouse from '@/components/CardHouse.vue'
+import { useUserStore } from '@/stores/user_info'
 
+const currentUser = ref<{ id: number, username: string } | null>(null)
 const homeService = new HomeService()
 const houses = ref<House[]>([])
 const filtered_houses = ref<House[]>([])
@@ -82,6 +83,10 @@ const activeButton = ref<'Price' | 'Size'>('Price')
 const router = useRouter()
 
 onMounted(async () => {
+  const userStore = useUserStore()
+
+  currentUser.value = userStore.user
+   console.log(currentUser.value)
   await getDates()
 })
 

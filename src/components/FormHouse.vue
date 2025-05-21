@@ -189,7 +189,7 @@ const checkInputs = async () => {
     bathrooms: fields.bathrooms,
     streetName: fields.streetName,
     houseNumber: fields.houseNumber,
-     numberAddition: fields.numberAddition,
+    numberAddition: fields.numberAddition,
     city: fields.city,
     zip: fields.zip,
   }).forEach(([key, val]) => formData.append(key, val))
