@@ -73,7 +73,6 @@ const houses = ref<House[]>([])
 const filtered_houses = ref<House[]>([])
 const loading = ref<boolean>(true)
 const error = ref<string | null>(null)
-const clear_input = ref<boolean>(false)
 const successful_search = ref<boolean>(true)
 const sheard = ref<string>('')
 const number_results = ref<number>(0)
@@ -84,9 +83,7 @@ const router = useRouter()
 
 onMounted(async () => {
   const userStore = useUserStore()
-
   currentUser.value = userStore.user
-   console.log(currentUser.value)
   await getDates()
 })
 
@@ -95,7 +92,7 @@ const getDates = async () => {
     loading.value = true
     await homeService.fetchAll()
     houses.value = homeService.houses.value
-    filtered_houses.value = houses.value
+    filtered_houses.value = [...houses.value] // copia nueva
     filtering_hauses(ordering_by.value)
   } catch (err) {
     error.value = 'Error to obtain the houses'
@@ -107,42 +104,44 @@ const getDates = async () => {
 
 const filtering_locations = () => {
   if (!sheard.value) {
-    successful_search.value = true
-    filtered_houses.value = houses.value
+    filtered_houses.value = [...houses.value]
     number_results.value = 0
-    clear_input.value = false
+    successful_search.value = true
   } else {
-    clear_input.value = true
     const searchTerm = sheard.value.toLowerCase()
     filtered_houses.value = houses.value.filter((house) => {
       const zip = house.location?.zip?.toLowerCase() || ''
       const city = house.location?.city?.toLowerCase() || ''
       return zip.includes(searchTerm) || city.includes(searchTerm)
     })
-
     number_results.value = filtered_houses.value.length
     successful_search.value = number_results.value > 0
   }
+
+  filtering_hauses(ordering_by.value)
 }
 
 watch(sheard, filtering_locations)
 
 const clear_imput = () => {
   sheard.value = ''
-  successful_search.value = true
+  filtered_houses.value = [...houses.value]
   number_results.value = 0
+  successful_search.value = true
+  filtering_hauses(ordering_by.value)
 }
 
 const filtering_hauses = (new_ordering: 'Price' | 'Size') => {
-  if (ordering_by.value !== new_ordering) {
-    ordering_by.value = new_ordering
-    filtered_houses.value = [...filtered_houses.value].sort((a, b) => {
-      if (new_ordering === 'Price') return a.price - b.price
-      if (new_ordering === 'Size') return a.size - b.size
-      return 0
-    })
-    activeButton.value = new_ordering
-  }
+  ordering_by.value = new_ordering
+  activeButton.value = new_ordering
+
+  // Ordenar sin modificar el original
+  filtered_houses.value = [...filtered_houses.value].sort((a, b) => {
+    if (new_ordering === 'Price') return a.price - b.price
+    if (new_ordering === 'Size') return a.size - b.size
+    return 0
+  })
+
 }
 
 const goToNewHause = () => {
@@ -157,6 +156,7 @@ const goToEditHouse = (id: number) => {
   router.push({ name: 'EditHouse', params: { id } })
 }
 </script>
+
 
 <style scoped>
 .row1 {
