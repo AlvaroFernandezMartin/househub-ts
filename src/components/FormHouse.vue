@@ -64,7 +64,7 @@
           <div class="column">
             <label for="hasGarage">Garage*</label>
             <select id="hasGarage" v-model="form.hasGarage">
-              <option value="" disabled selected>Select</option>
+              <option value="" disabled>Select</option>
               <option value="true">Yes</option>
               <option value="false">No</option>
             </select>
@@ -105,12 +105,18 @@ import defaultImage from '../assets/ic_upload@3x.png'
 import HomeService from '@/services/HomeService'
 import { useRouter } from 'vue-router'
 
+
 const router = useRouter()
 const homeService = new HomeService()
-
 const previewImage = ref<string | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
 const requiered_fild = ref(false)
+
+const props = defineProps<{ mode?: 'edit' | 'create', id?: number }>()
+
+const formTitle = computed(() => props.mode === 'edit' ? 'Edit listing' : 'Create new listing')
+const formButtonText = computed(() => props.mode === 'edit' ? 'UPDATE' : 'POST')
+
 
 const form = ref({
   streetName: '',
@@ -127,69 +133,39 @@ const form = ref({
   description: '',
 })
 
-const props = defineProps<{
-  mode?: 'edit' | 'create'
-  id?: number
-}>()
 
-const formTitle = computed(() => (props.mode === 'edit' ? 'Edit listing' : 'Create new listing'))
-const formButtonText = computed(() => (props.mode === 'edit' ? 'UPDATE' : 'POST'))
+
 
 onMounted(async () => {
   if (props.id) {
-    try {
-      const houseData = await homeService.fetchById(props.id)
-      const house = houseData
+    const house = await homeService.fetchById(Number(props.id))
+    if (!house) return
 
-      if (!house) return
-
-      form.value = {
-        streetName: house.location.street,
-        houseNumber: house.location.houseNumber.toString(),
-        numberAddition: house.location.houseNumberAddition ?? '',
-        zip: house.location.zip,
-        city: house.location.city,
-        price: house.price.toString(),
-        size: house.size.toString(),
-        hasGarage: house.hasGarage ? 'true' : 'false',
-        bedrooms: house.rooms.bedrooms.toString(),
-        bathrooms: house.rooms.bathrooms.toString(),
-        constructionYear: house.constructionYear.toString(),
-        description: house.description,
-      }
-    } catch (error) {
-      console.error('Error loading data:', error)
+    form.value = {
+      streetName: house.location.street,
+      houseNumber: house.location.houseNumber.toString(),
+      numberAddition: house.location.houseNumberAddition ,
+      zip: house.location.zip,
+      city: house.location.city,
+      price: house.price.toString(),
+      size: house.size.toString(),
+      hasGarage: house.hasGarage ? 'true' : 'false',
+      bedrooms: house.rooms.bedrooms.toString(),
+      bathrooms: house.rooms.bathrooms.toString(),
+      constructionYear: house.constructionYear.toString(),
+      description: house.description,
     }
+    previewImage.value = house.image
   }
 })
 
-const validateInputs = (): boolean => {
-  requiered_fild.value = false
-  let allFieldsCompleted = true
 
-  for (const [key, value] of Object.entries(form.value)) {
-    const element = document.getElementById(key)
-    if (element) {
-      if (!value) {
-        element.style.border = '1px solid red'
-        requiered_fild.value = true
-        allFieldsCompleted = false
-      } else {
-        element.style.border = ''
-      }
-    }
-  }
-
-  return allFieldsCompleted
-}
 
 const handleFileUpload = (event: Event) => {
   const file = (event.target as HTMLInputElement).files?.[0]
   if (file) {
     const reader = new FileReader()
-    reader.onload = (e) => {
-      previewImage.value = e.target?.result as string
-    }
+    reader.onload = e => previewImage.value = e.target?.result as string
     reader.readAsDataURL(file)
   }
 }
@@ -199,60 +175,65 @@ const triggerFileInput = () => {
 }
 
 const checkInputs = async () => {
-  if (!validateInputs()) {
-    console.error('Missing required fields.')
-    return
-  }
+  if (!validateInputs()) return
 
-  const preparedData = {
-    price: Number(form.value.price),
-    size: Number(form.value.size),
-    constructionYear: Number(form.value.constructionYear),
-    hasGarage: form.value.hasGarage === 'true',
-    description: form.value.description,
-    rooms: {
-      bedrooms: Number(form.value.bedrooms),
-      bathrooms: Number(form.value.bathrooms),
-    },
-    location: {
-      street: form.value.streetName,
-      houseNumber: Number(form.value.houseNumber),
-      houseNumberAddition: form.value.numberAddition,
-      city: form.value.city,
-      zip: form.value.zip,
-    },
-  }
+  const formData = new FormData()
+  const fields = form.value
+  Object.entries({
+    price: fields.price,
+    size: fields.size,
+    constructionYear: fields.constructionYear,
+    hasGarage: fields.hasGarage,
+    description: fields.description,
+    bedrooms: fields.bedrooms,
+    bathrooms: fields.bathrooms,
+    streetName: fields.streetName,
+    houseNumber: fields.houseNumber,
+     numberAddition: fields.numberAddition,
+    city: fields.city,
+    zip: fields.zip,
+  }).forEach(([key, val]) => formData.append(key, val))
 
+  const imageFile = fileInput.value?.files?.[0]
+  if (imageFile) formData.append('image', imageFile)
+
+  let houseId: number | undefined
   try {
-    let houseId: number | undefined
     if (props.mode === 'edit' && props.id !== undefined) {
       houseId = props.id
-      await homeService.updateHouse(houseId, preparedData)
+      console.log('FormData enviado a Service: ',formData)
+      await homeService.updateHouse(houseId, formData)
     } else {
-      houseId = await homeService.createHouse(preparedData)
+      houseId = await homeService.createHouse(formData)
     }
-
-    const imageFile = fileInput.value?.files?.[0]
-    if (imageFile && houseId !== undefined) {
-      await homeService.insertImg(houseId, imageFile)
-    }
-
-    if (houseId !== undefined) {
-      goToHouseDetail(houseId)
-    }
+    if (houseId !== undefined) router.push({ name: 'HouseDetail', params: { id: houseId } })
   } catch (error) {
     console.error('Error:', error)
   }
 }
+const validateInputs = (): boolean => {
+  requiered_fild.value = false
+  let complete = true
 
-const goToHomePage = () => {
-  router.push({ name: 'Home' })
+  for (const [key, value] of Object.entries(form.value)) {
+    if (key === 'numberAddition') continue
+
+    const el = document.getElementById(key)
+    if (el && !value) {
+      el.style.border = '1px solid red'
+      complete = false
+      requiered_fild.value = true
+    } else if (el) {
+      el.style.border = ''
+    }
+  }
+
+  return complete
 }
 
-const goToHouseDetail = (houseId: number) => {
-  router.push({ name: 'HouseDetail', params: { id: houseId } })
-}
+const goToHomePage = () => router.push({ name: 'Home' })
 </script>
+
 
 
 <style scoped>

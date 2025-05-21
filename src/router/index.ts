@@ -30,7 +30,7 @@ const routes: RouteRecordRaw[] = [
     path: '/edit-house/:id',
     name: 'EditHouse',
     component: EditHouse,
-    props: true,
+    props: route => ({ id: Number(route.params.id) }),
   },
   {
     path: '/house/:id',
