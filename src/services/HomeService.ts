@@ -3,7 +3,7 @@ import type { Ref } from 'vue'
 
 export interface House {
   id: number
-  image: string
+  image: string | null
   price: number
   size: number
   description: string
@@ -21,7 +21,9 @@ export interface House {
   constructionYear: number
   hasGarage: boolean
   createdAt: string
+  user: string 
 }
+
 
 const API_ROUTE = 'https://househubapi-production.up.railway.app'
 
