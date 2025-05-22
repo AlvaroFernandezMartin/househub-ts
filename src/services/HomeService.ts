@@ -3,7 +3,7 @@ import type { Ref } from 'vue'
 
 export interface House {
   id: number
-  image: string | null
+  image: string 
   price: number
   size: number
   description: string
@@ -21,7 +21,7 @@ export interface House {
   constructionYear: number
   hasGarage: boolean
   createdAt: string
-  user: string 
+  user: string
 }
 
 
