@@ -22,7 +22,7 @@
         <h2 class="mt-5 fw-bold">Design and Development</h2>
 
         <div class="d-flex align-items-start mt-4">
-          <img src="../assets/img_logo_dtt@3x.png" alt="DTT logo" class="img-fluid" style="max-width: 20%; height: auto;" />
+          <img src="../assets/DTT_Rental_Houses.png" alt="DTT logo" class="img-fluid" style="max-width: 20%; height: auto;" />
 
 
         </div>

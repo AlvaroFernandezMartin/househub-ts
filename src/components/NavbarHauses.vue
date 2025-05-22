@@ -4,7 +4,7 @@
       <div class="row">
         <div class="col-2"></div>
         <div class="col-8 d-flex align-items-center">
-          <img src="../assets/img_logo_dtt@3x.png" alt="dtt_logo" class="logo" />
+          <img src="../assets/DTT_Rental_Houses.png" alt="dtt_logo" class="logo" />
 
           <ul>
             <li>
@@ -53,7 +53,7 @@ const username = computed(() => userStore.user?.username ?? 'Invitado')
 
 const handleLogout = async () => {
   try {
-    await fetch('http://127.0.0.1:8000/api/auth/logout/', {
+    await fetch('https://househubapi-production.up.railway.app/api/auth/logout/', {
       method: 'POST',
       credentials: 'include',
     })
