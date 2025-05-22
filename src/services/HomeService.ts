@@ -104,7 +104,7 @@ export default class HomeService {
     try {
       const response = await fetch(url, {
         method: 'DELETE',
-        credentials: 'include', 
+        credentials: 'include',
       })
       if (!response.ok) {
         console.error('Error deleting house:', response.status, response.statusText)
@@ -113,16 +113,36 @@ export default class HomeService {
       console.error('Error deleting house:', error)
     }
   }
+ 
+    async signupUser(username: string, password: string): Promise<Response> {
+      return await fetch('http://127.0.0.1:8000/api/auth/signup/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      })
+    }
+
+    async loginUser(username: string, password: string): Promise<Response> {
+      return await fetch('http://127.0.0.1:8000/api/auth/login/', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      })
+    }
+
 
 }
 
-   // UserService.ts
-   export async function fetchCurrentUser(): Promise<{ id: number, username: string } | null> {
-    const response = await fetch('http://127.0.0.1:8000/api/auth/me/', {
-      credentials: 'include',
-    })
-    if (response.ok) {
-      return await response.json()
-    }
-    return null
-  }
+// UserService.ts
+export async function fetchCurrentUser(): Promise<{ id: number, username: string } | null> {
+const response = await fetch('http://127.0.0.1:8000/api/auth/me/', {
+  credentials: 'include',
+})
+if (response.ok) {
+  return await response.json()
+}
+return null
+}
+
+

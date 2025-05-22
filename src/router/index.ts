@@ -1,11 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
+
 import HomePage from '../views/HomePage.vue'
 import LoginPage from '../views/LoginPage.vue'
+import SignupPage from '../views/SignupPage.vue'
 import AboutInformation from '../views/AboutInformation.vue'
 import AddNewHouse from '../views/AddNewHouse.vue'
-import HouseDetail from '../views/HouseDetail.vue'
 import EditHouse from '../views/EditHouse.vue'
+import HouseDetail from '../views/HouseDetail.vue'
+
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
@@ -21,7 +24,11 @@ const routes: RouteRecordRaw[] = [
     name: 'Login',
     component: LoginPage,
   },
-
+  {
+    path: '/signup',
+    name: 'Signup',
+    component: SignupPage,
+  },
   {
     path: '/about',
     name: 'About',

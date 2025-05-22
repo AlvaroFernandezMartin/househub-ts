@@ -24,12 +24,7 @@
         <div class="d-flex align-items-start mt-4">
           <img src="../assets/img_logo_dtt@3x.png" alt="DTT logo" class="img-fluid" style="max-width: 20%; height: auto;" />
 
-          <div class="ms-4">
-            <label class="d-block mb-2">By DTT</label>
-            <label class="d-block">
-              <a href="https://www.d-tt.nl/" class="text-primary text-decoration-none">www.d-tt.nl</a>
-            </label>
-          </div>
+
         </div>
       </main>
 

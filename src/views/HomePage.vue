@@ -42,7 +42,7 @@
               v-for="house in filtered_houses"
               :key="house.id"
               :house="house"
-              :all_icons="house.user === currentUser?.username"
+              :all_icons="house.user === currentUser?.username || currentUser?.is_superuser"
               @delete-house="goToDeleteHouse"
               @edit-house="goToEditHouse(house.id)"
           />
@@ -92,9 +92,20 @@ const router = useRouter()
 onMounted(async () => {
   const userStore = useUserStore()
   currentUser.value = userStore.user
-  console.log(currentUser.value)
+
+  const userKey = currentUser.value?.username
+  const savedOrder = sessionStorage.getItem(`last_ordering_${userKey}`)
+  if (savedOrder === 'Price' || savedOrder === 'Size') {
+    ordering_by.value = savedOrder
+    activeButton.value = savedOrder
+    console.log('🔁 Orden recuperado de sessionStorage:', savedOrder)
+  }
+
   await getDates()
 })
+
+
+
 
 const getDates = async () => {
   try {
@@ -141,17 +152,24 @@ const clear_imput = () => {
 }
 
 const filtering_hauses = (new_ordering: 'Price' | 'Size') => {
+  console.log('📦 Aplicando orden:', new_ordering)
   ordering_by.value = new_ordering
   activeButton.value = new_ordering
 
-  // Ordenar sin modificar el original
+  if (currentUser.value?.username) {
+    sessionStorage.setItem(`last_ordering_${currentUser.value.username}`, new_ordering)
+  }
+
   filtered_houses.value = [...filtered_houses.value].sort((a, b) => {
     if (new_ordering === 'Price') return a.price - b.price
     if (new_ordering === 'Size') return a.size - b.size
     return 0
   })
 
+  console.log('✅ Resultado ordenado:', filtered_houses.value.map(h => new_ordering === 'Price' ? h.price : h.size))
 }
+
+
 
 const goToNewHause = () => {
   router.push({ name: 'NewHouse' })

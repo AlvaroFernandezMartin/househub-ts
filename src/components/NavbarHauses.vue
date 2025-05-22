@@ -3,8 +3,6 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-2"></div>
-
-        <!-- Contenido principal del navbar -->
         <div class="col-8 d-flex align-items-center">
           <img src="../assets/img_logo_dtt@3x.png" alt="dtt_logo" class="logo" />
 
@@ -17,17 +15,25 @@
             </li>
           </ul>
 
-          <!-- Usuario a la derecha -->
-          <div
-            class="user-section d-flex align-items-center ms-auto"
-            @click="handleUserClick"
-            style="cursor: pointer;"
-          >
+          <!-- Usuario e icono a la derecha -->
+          <div class="user-section d-flex align-items-center ms-auto">
             <i class="bi bi-person-circle"></i>
-            <span class="ms-2">{{ username }}</span>
+            <span class="ms-2 me-3">{{ username }}</span>
+
+            <!-- Botón de login/logout -->
+            <button v-if="isLoggedIn" class="btn btn-outline-danger btn-sm" @click="handleLogout">
+              Logout
+            </button>
+            <div v-else>
+              <router-link :to="{ name: 'Login' }" class="btn btn-outline-primary btn-sm me-2">
+                Login
+              </router-link>
+              <router-link :to="{ name: 'Signup' }" class="btn btn-outline-success btn-sm">
+                Signup
+              </router-link>
+            </div>
           </div>
         </div>
-
         <div class="col-2"></div>
       </div>
     </div>
@@ -39,16 +45,22 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user_info'
 
-const router = useRouter()
 const userStore = useUserStore()
+const router = useRouter()
 
-const username = computed(() =>
-  userStore.user?.username ?? 'Usuario sin registrar'
-)
+const isLoggedIn = computed(() => userStore.user !== null)
+const username = computed(() => userStore.user?.username ?? 'Invitado')
 
-const handleUserClick = () => {
-  if (!userStore.user) {
+const handleLogout = async () => {
+  try {
+    await fetch('http://127.0.0.1:8000/api/auth/logout/', {
+      method: 'POST',
+      credentials: 'include',
+    })
+    userStore.clearUser()
     router.push({ name: 'Login' })
+  } catch (err) {
+    console.error('Logout error:', err)
   }
 }
 </script>

@@ -2,8 +2,14 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { fetchCurrentUser } from '@/services/HomeService'
 
+type User = {
+  id: number
+  username: string
+  is_superuser: boolean
+}
+
 export const useUserStore = defineStore('user', () => {
-  const user = ref<{ id: number, username: string } | null>(null)
+  const user = ref<User | null>(null)
 
   const initUser = async () => {
     user.value = await fetchCurrentUser()
@@ -15,5 +21,3 @@ export const useUserStore = defineStore('user', () => {
 
   return { user, initUser, clearUser }
 })
-
-
