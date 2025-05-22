@@ -75,7 +75,8 @@ import HomeService, { type House } from '@/services/HomeService'
 import CardHouse from '@/components/CardHouse.vue'
 import { useUserStore } from '@/stores/user_info'
 
-const currentUser = ref<{ id: number, username: string } | null>(null)
+const currentUser = ref<{ id: number, username: string, is_superuser: boolean } | null>(null)
+
 const homeService = new HomeService()
 const houses = ref<House[]>([])
 const filtered_houses = ref<House[]>([])
