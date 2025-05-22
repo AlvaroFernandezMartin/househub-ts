@@ -1,18 +1,21 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { fetchCurrentUser } from '@/services/HomeService'
 
-type User = {
+interface User {
   id: number
   username: string
   is_superuser: boolean
 }
-
 export const useUserStore = defineStore('user', () => {
   const user = ref<User | null>(null)
 
   const initUser = async () => {
-    user.value = await fetchCurrentUser()
+    const response = await fetch('https://househubapi-production.up.railway.app/api/auth/me/', {
+      credentials: 'include'
+    })
+    if (response.ok) {
+      user.value = await response.json()
+    }
   }
 
   const clearUser = () => {
